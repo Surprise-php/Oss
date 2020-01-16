@@ -1,5 +1,5 @@
 {
-    "name": "surprise-php/Oss",
+    "name": "surprise-php/oss",
     "description": "基于phalcon框架，封装了常见的oss client",
     "type": "library",
     "require": {
