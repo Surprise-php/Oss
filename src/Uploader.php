@@ -1,8 +1,8 @@
 <?php
-namespace SurprisePhp\Oss;
+namespace surprisephp\Oss;
 
 use Phalcon\Mvc\User\Component;
-use SurprisePhp\Oss\contract\OssInterface;
+use surprisephp\Oss\contract\OssInterface;
 use Uploader\Helpers\Format;
 use Phalcon\Http\Request;
 

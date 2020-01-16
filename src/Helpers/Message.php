@@ -1,5 +1,5 @@
 <?php
-namespace SurprisePhp\Oss\Helpers;
+namespace surprisephp\Oss\Helpers;
 
 /**
  * Message helper class
