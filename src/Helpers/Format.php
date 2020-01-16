@@ -1,5 +1,5 @@
 <?php
-namespace surprisephp\Oss\Helpers;
+namespace SurprisePhp\Oss\Helpers;
 
 /**
  * Format helper class

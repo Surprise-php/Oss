@@ -1,6 +1,6 @@
 <?php
 
-namespace surprisephp\Oss\OssClient;
+namespace SurprisePhp\Oss\OssClient;
 
 use http\Exception\InvalidArgumentException;
 use OSS\Core\OssException;
@@ -8,7 +8,7 @@ use OSS\OssClient;
 use Phalcon\Di;
 use Phalcon\Http\Request\File;
 use Phalcon\Mvc\User\Component;
-use surprisephp\Oss\Contract\OssInterface;
+use SurprisePhp\Oss\Contract\OssInterface;
 
 class Alibaba extends Component implements OssInterface
 {

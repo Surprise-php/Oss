@@ -1,5 +1,5 @@
 <?php
-namespace surprisephp\Oss;
+namespace SurprisePhp\Oss;
 
 use Uploader\Helpers\Message;
 use Uploader\Helpers\Format;
