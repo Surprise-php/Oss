@@ -1,0 +1,25 @@
+{
+    "name": "surprise/Oss",
+    "description": "基于phalcon框架，封装了常见的oss client",
+    "type": "library",
+    "require": {
+        "aliyuncs/oss-sdk-php": "^2.3",
+        "ext-phalcon":"^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "maweibinguo",
+            "email": "ghm6674@dingtalk.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Surprise\\Oss\\": "src"
+        }
+    },
+    "minimum-stability": "stable"
+}
