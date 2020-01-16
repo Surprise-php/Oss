@@ -8,7 +8,7 @@ use OSS\OssClient;
 use Phalcon\Di;
 use Phalcon\Http\Request\File;
 use Phalcon\Mvc\User\Component;
-use SurprisePhp\Oss\contract\OssInterface;
+use SurprisePhp\Oss\Contract\OssInterface;
 
 class Alibaba extends Component implements OssInterface
 {

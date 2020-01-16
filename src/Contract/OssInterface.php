@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SurprisePhp\Oss\contract;
+namespace SurprisePhp\Oss\Contract;
 
 
 use Phalcon\Http\Request\File;

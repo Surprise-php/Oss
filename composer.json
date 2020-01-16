@@ -1,5 +1,5 @@
 {
-    "name": "surprise/Oss",
+    "name": "SurprisePhp/Oss",
     "description": "基于phalcon框架，封装了常见的oss client",
     "type": "library",
     "require": {
@@ -18,7 +18,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Surprise\\Oss\\": "src"
+            "SurprisePhp\\Oss\\": "src"
         }
     },
     "minimum-stability": "stable"
