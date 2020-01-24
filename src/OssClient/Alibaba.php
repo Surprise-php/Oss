@@ -2,7 +2,6 @@
 
 namespace SurprisePhp\Oss\OssClient;
 
-use http\Exception\InvalidArgumentException;
 use OSS\Core\OssException;
 use OSS\OssClient;
 use Phalcon\Di;
@@ -21,20 +20,27 @@ class Alibaba extends Component implements OssInterface
         if (isset(static::$sdkClient)) {
             return static::$sdkClient;
         } else {
+            /**
+             * @var $di Di
+             */
             $di = Di::getDefault();
-            $ossClientConfig = $di->get('config')->get('ossClient');
-            if(empty($ossClientConfig) || !isset($ossClientConfig['bucket'])) {
-                throw new InvalidArgumentException("ossClient config is lost");
+            if($di->has('config') == false) {
+                throw new \InvalidArgumentException('config serivce is lost');
             } else {
-                try {
-                    static::$clientConfig = $ossClientConfig;
-                    static::$sdkClient = new OssClient($ossClientConfig->get('accessKeyId'),
-                        $ossClientConfig->get('accessKeySecret'),
-                        $ossClientConfig->get('endpoint'));
-                    return static::$sdkClient;
-                } catch (OssException $e) {
-                    $msg = $e->getMessage();
-                    throw new InvalidArgumentException($msg);
+                $ossClientConfig = $di->get('config')->get('ossClient');
+                if(empty($ossClientConfig) || !isset($ossClientConfig['bucket'])) {
+                    throw new \InvalidArgumentException("ossClient config is lost");
+                } else {
+                    try {
+                        static::$clientConfig = $ossClientConfig;
+                        static::$sdkClient = new OssClient($ossClientConfig->get('accessKeyId'),
+                            $ossClientConfig->get('accessKeySecret'),
+                            $ossClientConfig->get('endPoint'));
+                        return static::$sdkClient;
+                    } catch (OssException $e) {
+                        $msg = $e->getMessage();
+                        throw new \InvalidArgumentException($msg);
+                    }
                 }
             }
         }
@@ -53,7 +59,7 @@ class Alibaba extends Component implements OssInterface
              * @var $sdkClient OssClient
              */
             $sdkClient = self::getSdkClient();
-            $sdkClient->uploadFile(self::$clientConfig['bucket'], $file->getTempName(), $newFileName);
+            $res = $sdkClient->uploadFile(self::$clientConfig['bucket'], $newFileName, $file->getTempName());
             return $newFileName;
         } catch (\Throwable $e) {
             throw new \Exception(sprintf("upload file failed, reason : %s", $e->getMessage()));

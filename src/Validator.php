@@ -1,8 +1,8 @@
 <?php
 namespace SurprisePhp\Oss;
 
-use Uploader\Helpers\Message;
-use Uploader\Helpers\Format;
+use SurprisePhp\Oss\Helpers\Message;
+use SurprisePhp\Oss\Helpers\Format;
 
 /**
  * Validator class
@@ -32,7 +32,6 @@ class Validator
     public function checkMinsize(\Phalcon\Http\Request\File $file, $value)
     {
         // conversion to the desired format
-
         if (is_array($value) === true) {
             $value = $value[key($value)];
         }

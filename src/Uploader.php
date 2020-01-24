@@ -1,6 +1,7 @@
 <?php
 namespace SurprisePhp\Oss;
 
+use mysql_xdevapi\Exception;
 use Phalcon\Mvc\User\Component;
 use SurprisePhp\Oss\contract\OssInterface;
 use Uploader\Helpers\Format;
@@ -58,6 +59,11 @@ class Uploader extends Component {
     private $ossClient;
 
     /**
+     * @var string
+     */
+    private $domain;
+
+    /**
      * Initialize rules
      *
      * @param array $rules
@@ -70,10 +76,12 @@ class Uploader extends Component {
 
         // get validator
         $this->validator = new Validator();
-        // get current request
+        
         $this->request = new Request();
-
-        $this->ossClient;
+        
+        $this->ossClient = $ossClient;
+        
+        $this->domain = $this->getDI()->get('config')->get('attach')['domain'];
     }
 
     /**
@@ -92,7 +100,6 @@ class Uploader extends Component {
                 $this->rules[$key] = trim($values);
             }
         }
-
         return $this;
     }
 
@@ -105,7 +112,6 @@ class Uploader extends Component {
     {
         // get files for upload
         $this->files = $this->request->getUploadedFiles();
-
         if (sizeof($this->files) > 0) {
 
             // do any actions if files exists
@@ -113,7 +119,6 @@ class Uploader extends Component {
             foreach ($this->files as $n => $file) {
 
                 // apply all the validation rules for each file
-
                 foreach ($this->rules as $key => $rule) {
 
                     if (method_exists($this->validator, 'check' . ucfirst($key)) === true) {
@@ -136,33 +141,87 @@ class Uploader extends Component {
     public function upload()
     {
         $filePathItem = [];
+        $checkResult = $this->isValid();
+        if($checkResult === false) {
+            throw new Exception(end($this->getErrors()));
+        } else {
+            // do any actions if files exists
+            foreach ($this->files as $n => $file) {
 
-        // do any actions if files exists
+                $filename = $file->getName();
 
-        foreach ($this->files as $n => $file) {
+                if (isset($this->rules['hash']) === true) {
+                    if (empty($this->rules['hash']) === true) {
+                        $this->rules['hash'] = 'md5';
+                    }
 
-            $filename = $file->getName();
-
-            if (isset($this->rules['hash']) === true) {
-                if (empty($this->rules['hash']) === true) {
-                    $this->rules['hash'] = 'md5';
+                    if (!is_string($this->rules['hash']) === true) {
+                        $filename = call_user_func($this->rules['hash']) . '.' . $file->getExtension();
+                    } else {
+                        $filename = $this->rules['hash']($filename) . '.' . $file->getExtension();
+                    }
                 }
 
-                if (!is_string($this->rules['hash']) === true) {
-                    $filename = call_user_func($this->rules['hash']) . '.' . $file->getExtension();
-                } else {
-                    $filename = $this->rules['hash']($filename) . '.' . $file->getExtension();
+                if (isset($this->rules['sanitize']) === true) {
+                    $filename = Format::toLatin($filename, '', true);
                 }
-            }
 
-            if (isset($this->rules['sanitize']) === true) {
-                $filename = Format::toLatin($filename, '', true);
+                $filePathItem[] = $this->ossClient->uploadFile($file, $filename);
             }
-
-            $filePathItem[] = $this->ossClient->uploadFile($file, $filename);
         }
 
         return $filePathItem;
+    }
+
+    /**
+     * @param $width
+     * @param $height
+     * @return array
+     */
+    public function resizeImg($width, $height)
+    {
+        $resizePathItem = [];
+
+        $filePathItem = $this->upload();
+        foreach($filePathItem as $path) {
+            $resizePathItem['normal'] = $path;
+            $resizePathItem['resize'] = sprintf("%s?x-oss-process=image/resize,m_fixed,h_%s,w_%s", $path, $width, $height);
+        }
+        
+        return $resizePathItem;
+    }
+
+    /**
+     * 获取路径
+     */
+    public function getAttachUrl($attachList)
+    {
+        if (is_string($attachList)) {
+            $attachList = str_replace('//', '/', $attachList);
+            $attachList = $this->domain . $attachList;
+            return $attachList;
+        } elseif (is_array($attachList)) {
+            foreach ($attachList as $key => $value) {
+                $attachList[$key] = $this->getAttachUrl($value);
+            }
+        }
+
+        return $attachList;
+    }
+
+    /**
+     * @param $attachPath
+     * @param $width
+     * @param $height
+     */
+    public function getResizeFilePath($attachPath, $width, $height)
+    {
+        if(is_numeric($width) && is_numeric($width) && $width > 0 && $height > 0) {
+            $resizePath = sprintf("%s?x-oss-process=image/resize,m_fixed,h_%s,w_%s", $attachPath, $width, $height);
+            return $resizePath;
+        } else {
+            throw new \InvalidArgumentException("params is wrong");
+        }
     }
 
     /**
