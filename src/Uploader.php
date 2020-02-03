@@ -180,15 +180,16 @@ class Uploader extends Component {
      */
     public function resizeImg($width, $height)
     {
-        $resizePathItem = [];
+        $resizePathList = [];
 
         $filePathItem = $this->upload();
         foreach($filePathItem as $path) {
+            $resizePathItem = [];
             $resizePathItem['normal'] = $path;
             $resizePathItem['resize'] = sprintf("%s?x-oss-process=image/resize,m_fixed,h_%s,w_%s", $path, $width, $height);
+            array_push($resizePathList, $resizePathItem);
         }
-        
-        return $resizePathItem;
+        return $resizePathList;
     }
 
     /**
